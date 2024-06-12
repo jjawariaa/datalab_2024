@@ -1,0 +1,112 @@
+---
+title: "sewanee_climate"
+author: "Jawaria Jaleel"
+output: "html_document"
+date: "2024-06-12"
+---
+#Introduction
+
+### Questions
+
+#1. Average precipitation for each month in five year periods.
+```{r}
+
+```
+
+
+#2. Effect of temperature on precipitation from 2010 to 2020
+
+
+#3. Minimum and maximum temperature over time for the entire period
+
+
+#4. How has snowfall changed over time for the entire period?
+
+
+#5. Average temperature over time.
+
+
+#6. What month has the most snowfall on average
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+
+#load library
+library(tidyverse)
+setwd("/Users/jawariajaleel/Desktop/dl_2024/climate_sewanee/")
+weather <- read_csv("/Users/jawariajaleel/Desktop/dl_2024/climate_sewanee/sewanee_weather.csv")
+# weather <- read_csv("sewanee_weather.csv")
+#make a col for month and year
+weather <- weather %>%
+  mutate(month=month(ymd(DATE))) %>%
+  mutate(year=year(ymd(DATE))) %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name=fct_reorder(month_name, month))
+
+#finding monthly avg for five year periods
+weather <- weather %>%
+  mutate(yrblock = case_when(
+      year >= 2000 & year <= 2004  ~ "2000-2004",
+      year >= 2005 & year <= 2009  ~ "2005-2009",
+      year >= 2010 & year <= 2014  ~ "2010-2014",
+      year >= 2015 & year <= 2019  ~ "2015-2019",
+      year >= 2020 & year <= 2024  ~ "2020-2024",
+      .default = "other"
+    ))
+
+```
+
+```{r}
+#c#create a new datasets with months, year blocks, and average precipitation
+precip <- weather %>%
+  group_by(yrblock, month_name) %>%
+  summarize(meanprecip = mean(PRCP, na.rm = TRUE))
+```
+```{r}
+#Graphs
+ggplot(precip, aes(x = month_name, y=meanprecip))+
+  geom_col(fill="lightblue")+
+  facet_wrap(~yrblock, nrow = 5)
+  labs(x = "Month", y = "Average Precipitation")
+  
+```
+
+
+```{r}
+# Average precipication and average temperature
+```{r}
+temp <- weather %>%
+  group_by(yrblock, month_name) %>%
+  summarize(meantemp = mean(TMAX, na.rm = TRUE))
+```
+```{r}
+ggplot(temp, aes(x = month_name, y=meantemp))+
+  geom_col(fill="#FF7074")+
+  facet_wrap(~yrblock, nrow = 5)
+  labs(x = "Month", y = "Average Temperature")
+```
+```{r}
+tempmin <- weather %>%
+  group_by(yrblock, month_name) %>%
+  summarize(meantemp = mean(TMIN, na.rm = TRUE))
+```
+```{r}
+ggplot(tempmin, aes(x = month_name, y=meantemp))+
+  geom_col(fill="pink")+
+  facet_wrap(~yrblock, nrow = 5)
+  labs(x = "Month", y = "Average Temperature")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```
