@@ -62,21 +62,38 @@ top_10 <- head( word_freq, 10)
 ggplot(data = top_10, aes( x = word, y = n)) + geom_col()
 # 20. Run the below to join word_freq with sentiments.
 # 
+sentiments1 <- left_join(sentiments, word_freq,by = "word")
 # 21. Now explore the data. What is going on?
 #   
+
 #   22. For the whole survey, were there more negative or positive sentiment words used?
 #   
+
 #   23. Create an object with the number of negative and positive words used for each person.
 # 
+sentiments2 <- sentiments1 %>% #creates new dataset
+  group_by(sentiment) %>% #groups by positive or negative
+  summarise(total_frequency = sum(n, na.rm = TRUE)) %>% #summarizes
+  spread(key = sentiment, value = total_frequency, fill = 0) 
 # 24. In that object, create a new variabled named sentimentality, which is the number of positive words minus the number of negative words.
 # 
+sentiments2 <- sentiments2 %>% mutate(sentimentality=positive-negative)
 # 25. Make a histogram of senitmentality
 # 
+ggplot( data = sentiments2, aes( x = sentimentality)) + geom_histogram() 
 # 26. Make a barplot of sentimentality.
 # 
+ggplot( data = sentiments2, aes( x = sentimentality)) + geom_bar() 
 # 27. Create a wordcloud for the dream variable.
 # 
+sdream <- survey %>%
+  select(first_name, dream) %>%
+  unnest_tokens(words, dream)
+
+sdream1 <- sdream %>% group_by(words) %>% tally()
+wordcloud2(sdream, size = 0.5)
 # 28. Create a barplot showing the top 16 words in our dreams.
+
 # 
 # 29. Which word showed up most in people’s description of Joe?
 #   
